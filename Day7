@@ -1,0 +1,35 @@
+import re
+from functools import reduce
+
+def parse_cnt(cnt):
+    parsed_lines = []
+    for line in cnt.splitlines():
+        matches = re.findall(r'\d+', line)
+        # Ensure the line has at least one test value and one calibration number
+        if len(matches) >= 2:
+            parsed_lines.append((int(matches[0]), list(map(int, matches[1:]))))
+    return parsed_lines
+
+def task1(cnt):
+    equations = parse_cnt(cnt)
+
+    def reduce_routine(res, n):
+        return [op(r, n) for r in res for op in (lambda a, b: a+b, lambda a, b: a*b)]
+
+    print(sum((eq * (eq in reduce(reduce_routine, [[nums[0]]] + nums[1:])) for eq, nums in equations)))
+
+def task2(cnt):
+    equations = parse_cnt(cnt)
+
+    def reduce_routine(res, n):
+        return [op(r, n) for r in res for op in (lambda a, b: a+b, lambda a, b: a*b, lambda a, b: int(str(a)+str(b)))]
+
+    print(sum((eq * (eq in reduce(reduce_routine, [[nums[0]]] + nums[1:])) for eq, nums in equations)))
+
+# Read input from a text file
+with open('day7.txt', 'r') as file:
+    input_data = file.read()
+
+# Call task1 or task2 with the file content
+task1(input_data)
+task2(input_data)
